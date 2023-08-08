@@ -24,6 +24,5 @@ USE employee_db;
     manager_id INT,
     FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE SET NULL,
     FOREIGN KEY (manager_id) REFERENCes employee(id) ON DELETE SET NULL
- );
-
+ )
 
