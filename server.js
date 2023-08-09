@@ -1,13 +1,17 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
+const table = require("console.table");
 
+const PORT = process.env.PORT || 3001;
 
 const db = mysql.createConnection ({
     host: "localhost",
     user: "root",
     password: "21Work!!",
-    database : "employee_db",
+    database : "employee_db"
 }, console.log("connected jess"));
+
+
 
 const questions = ()=> {
     return inquirer.prompt ([
@@ -23,7 +27,7 @@ const questions = ()=> {
                 "Add A Role",
                 "Add An Employee",
                 "Update An Employee Role",
-                "Quit",
+                "Quit"
             ],
         },
         
@@ -56,8 +60,36 @@ const questions = ()=> {
             db.end();
           break;
    }
-})
+});
     
-};
+function vDept(){
+  db.query("select * from department", function (err, results) {
+      if (err){console.log('Error viewing table')} 
+      else{ console.table(results);
+            questions();
+      }
+  });
+}
+}
+
+// function vDept(){
+//   db.query("select* from departments")
+// };
+
+// function vRoles(){
+//   db.query("select * from role");
+// };
+
+// function vEmp(){
+//   const query = "SELECT * FROM employee";
+//   db.query(query,(err, results) => {
+//     if (err) throw err;
+//     console.log("All Employees:");
+//     console.table(results);
+//   questions();
+// });
+// }
 
 questions();
+
+console.log("restarting")
