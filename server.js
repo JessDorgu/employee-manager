@@ -90,8 +90,25 @@ function vEmpemp(){
 }
   });
 }
+const aDept = ()=> {
+  return inquirer.prompt([
+    {type : "input",
+    name : "dept_name",
+    message : "Please Enter New Department Name:"
+  },
+  ])
+  .then((answer) => {   
+    db.query("INSERT INTO department (dept_name) VALUES (?)", answer,
+  function (err, results) {
+  if (err){console.log('Failed to add New Department')} 
+  else{console.log("New Department Added");
+        questions();
+}
+  });
+});
 
+// aRole();
+// aEmp();
 
+}
 questions();
-
-console.log("restarting");
