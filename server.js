@@ -41,8 +41,8 @@ const questions = ()=> {
         case "View All Roles":
           vRoles();
           break;
-        case "View All Employee":
-          vEmp();
+        case "View All Employees":
+          vEmpemp();
           break;
           case "Add A Department":
           aDept();
@@ -65,31 +65,33 @@ const questions = ()=> {
 function vDept(){
   db.query("select * from department", function (err, results) {
       if (err){console.log('Error viewing table')} 
-      else{ console.table(results);
+      else{console.table(results);
             questions();
       }
   });
 }
 }
 
-// function vDept(){
-//   db.query("select* from departments")
-// };
 
-// function vRoles(){
-//   db.query("select * from role");
-// };
+function vRoles(){
+  db.query("select * from role", function (err, results) {
+  if (err){console.log('Error viewing table')} 
+  else{console.table(results);
+        questions();
+}
+  });
+}
 
-// function vEmp(){
-//   const query = "SELECT * FROM employee";
-//   db.query(query,(err, results) => {
-//     if (err) throw err;
-//     console.log("All Employees:");
-//     console.table(results);
-//   questions();
-// });
-// }
+function vEmpemp(){
+  db.query("select * from employee", function (err, results) {
+  if (err){console.log('Error viewing table')} 
+  else{console.table(results);
+        questions();
+}
+  });
+}
+
 
 questions();
 
-console.log("restarting")
+console.log("restarting");
