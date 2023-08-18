@@ -230,5 +230,55 @@ choices : managerList
 
 }
 )})}
+
+function upRole(){
+  const roleQuery = "SELECT * FROM role";
+
+  db.query(roleQuery, (err, res) => {
+    if (err) throw err;
+  const roleList = res.map((role) => ({
+    name: role.title,
+    id: role.id,
+  }));
+
+  const empQuery = 'select id,concat(first_name," ",last_name) as empName from employee';
+
+  db.query(empQuery,  (err, res) => {
+    if (err) throw err;
+  const empList = res.map((employee) => ({
+    name: employee.empName,
+    id: employee.id,
+  }));
+
+  const upRoleQuestions =[
+    {type : "list",
+    name : "uEmployee",
+    message : "Please select an Employee:",
+    choices : empList
+  },
+  {type : "list",
+  name : "sRole",
+  message : "What Role does this Employee now have:",
+  choices : roleList
+}
+  ]
+  inquirer.prompt(upRoleQuestions).then(({uEmployee,sRole})=>{
+    const sroleId = roleList.find(
+      (role) => role.name === sRole
+    ).id;
+    const sEmpId = empList.find(
+      (employee) => employee.name === uEmployee
+    ).id;
+      db.query('update employee set role_id =? where id = ?',[sroleId,sEmpId], function(err,res){
+          if (err) {console.log('Error in updating Employee Role')}
+              else{
+                 console.log('Employee Role Updated Successfully');
+                 questions();
+              }
+      })
+  })
+} )})}
+
+
 questions();
   
