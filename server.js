@@ -176,109 +176,119 @@ function aEmp() {
 
   db.query(roleQuery, (err, res) => {
     if (err) throw err;
-  const roleList = res.map((role) => ({
-    name: role.title,
-    id: role.id,
-  }));
-  const empQuery = 'select id,concat(first_name," ",last_name) as managerName from employee where manager_id is NULL';
+    const roleList = res.map((role) => ({
+      name: role.title,
+      id: role.id,
+    }));
+    const empQuery =
+      'select id,concat(first_name," ",last_name) as managerName from employee where manager_id is NULL';
 
-  db.query(empQuery,  (err, res) => {
-    if (err) throw err;
-  const managerList = res.map((employee) => ({
-    name: employee.managerName,
-    id: employee.id,
-  }));
+    db.query(empQuery, (err, res) => {
+      if (err) throw err;
+      const managerList = res.map((employee) => ({
+        name: employee.managerName,
+        id: employee.id,
+      }));
 
-  
+      const addEmpQuestions = [
+        {
+          type: "input",
+          name: "first_name",
+          message: "Please Enter Firstname:",
+        },
+        { type: "input", name: "last_name", message: "Please Enter Lastname:" },
+        {
+          type: "list",
+          name: "sRole",
+          message: "What Role does this Employee have:",
+          choices: roleList,
+        },
+        {
+          type: "list",
+          name: "sManager",
+          message: "What is the Name of this Employee's Manager:",
+          choices: managerList,
+        },
+      ];
 
-  const addEmpQuestions =[
-    {type : "input",
-    name : "first_name",
-    message : "Please Enter Firstname:"
-  },
-  {type : "input",
-  name : "last_name",
-  message : "Please Enter Lastname:"
-},
-  {type : "list",
-  name : "sRole",
-  message : "What Role does this Employee have:",
-  choices : roleList
-},
-{type : "list",
-name : "sManager",
-message : "What is the Name of this Employee's Manager:",
-choices : managerList
-}
-  ]
-
-  inquirer.prompt(addEmpQuestions).then(({first_name,last_name,sRole,sManager})=>{
-    const sroleId = roleList.find(
-      (role) => role.name === sRole
-    ).id;
-    const smanagerId = managerList.find(
-      (employee) => employee.name === sManager
-    ).id;
-      db.query('insert into employee (first_name, last_name, role_id, manager_id) values(?,?,?,?)',[first_name, last_name, sroleId, smanagerId], function(err,res){
-          if (err) {console.log('Error in adding Employee')}
-              else{
-                 console.log('Employee Added Successfully');
-                 questions();
+      inquirer
+        .prompt(addEmpQuestions)
+        .then(({ first_name, last_name, sRole, sManager }) => {
+          const sroleId = roleList.find((role) => role.name === sRole).id;
+          const smanagerId = managerList.find(
+            (employee) => employee.name === sManager
+          ).id;
+          db.query(
+            "insert into employee (first_name, last_name, role_id, manager_id) values(?,?,?,?)",
+            [first_name, last_name, sroleId, smanagerId],
+            function (err, res) {
+              if (err) {
+                console.log("Error in adding Employee");
+              } else {
+                console.log("Employee Added Successfully");
+                questions();
               }
-      })
-  })
-
+            }
+          );
+        });
+    });
+  });
 }
-)})}
 
-function upRole(){
+function upRole() {
   const roleQuery = "SELECT * FROM role";
 
   db.query(roleQuery, (err, res) => {
     if (err) throw err;
-  const roleList = res.map((role) => ({
-    name: role.title,
-    id: role.id,
-  }));
+    const roleList = res.map((role) => ({
+      name: role.title,
+      id: role.id,
+    }));
 
-  const empQuery = 'select id,concat(first_name," ",last_name) as empName from employee';
+    const empQuery =
+      'select id,concat(first_name," ",last_name) as empName from employee';
 
-  db.query(empQuery,  (err, res) => {
-    if (err) throw err;
-  const empList = res.map((employee) => ({
-    name: employee.empName,
-    id: employee.id,
-  }));
+    db.query(empQuery, (err, res) => {
+      if (err) throw err;
+      const empList = res.map((employee) => ({
+        name: employee.empName,
+        id: employee.id,
+      }));
 
-  const upRoleQuestions =[
-    {type : "list",
-    name : "uEmployee",
-    message : "Please select an Employee:",
-    choices : empList
-  },
-  {type : "list",
-  name : "sRole",
-  message : "What Role does this Employee now have:",
-  choices : roleList
+      const upRoleQuestions = [
+        {
+          type: "list",
+          name: "uEmployee",
+          message: "Please select an Employee:",
+          choices: empList,
+        },
+        {
+          type: "list",
+          name: "sRole",
+          message: "What Role does this Employee now have:",
+          choices: roleList,
+        },
+      ];
+      inquirer.prompt(upRoleQuestions).then(({ uEmployee, sRole }) => {
+        const sroleId = roleList.find((role) => role.name === sRole).id;
+        const sEmpId = empList.find(
+          (employee) => employee.name === uEmployee
+        ).id;
+        db.query(
+          "update employee set role_id =? where id = ?",
+          [sroleId, sEmpId],
+          function (err, res) {
+            if (err) {
+              console.log("Error in updating Employee Role");
+            } else {
+              console.log("Employee Role Updated Successfully");
+              questions();
+            }
+          }
+        );
+      });
+    });
+  });
 }
-  ]
-  inquirer.prompt(upRoleQuestions).then(({uEmployee,sRole})=>{
-    const sroleId = roleList.find(
-      (role) => role.name === sRole
-    ).id;
-    const sEmpId = empList.find(
-      (employee) => employee.name === uEmployee
-    ).id;
-      db.query('update employee set role_id =? where id = ?',[sroleId,sEmpId], function(err,res){
-          if (err) {console.log('Error in updating Employee Role')}
-              else{
-                 console.log('Employee Role Updated Successfully');
-                 questions();
-              }
-      })
-  })
-} )})}
-
 
 questions();
-  
